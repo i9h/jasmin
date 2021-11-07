@@ -1,11 +1,7 @@
 FROM python:3-alpine
 
-MAINTAINER Jookies LTD <jasmin@jookies.net>
-
-# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN addgroup -S jasmin && adduser -S -g jasmin jasmin
 
-# Install requirements
 RUN apk --update add \
     gcc \
     musl-dev \
@@ -29,10 +25,10 @@ RUN chown jasmin:jasmin ${CONFIG_PATH} ${RESOURCE_PATH} ${STORE_PATH} ${LOG_PATH
 
 WORKDIR /build
 
-RUN pip install -e git+https://github.com/jookies/txamqp.git@master#egg=txamqp3
-RUN pip install -e git+https://github.com/jookies/python-messaging.git@master#egg=python-messaging
-RUN pip install -e git+https://github.com/jookies/smpp.pdu.git@master#egg=smpp.pdu3
-RUN pip install -e git+https://github.com/jookies/smpp.twisted.git@master#egg=smpp.twisted3
+RUN pip install -e git+https://github.com/i9h/txamqp.git@master#egg=txamqp3
+RUN pip install -e git+https://github.com/i9h/python-messaging.git@master#egg=python-messaging
+RUN pip install -e git+https://github.com/i9h/smpp.pdu.git@master#egg=smpp.pdu3
+RUN pip install -e git+https://github.com/i9h/smpp.twisted.git@master#egg=smpp.twisted3
 
 COPY . .
 
@@ -53,9 +49,6 @@ RUN sed -i '/\[amqp-broker\]/a host=rabbitmq' ${CONFIG_PATH}/jasmin.cfg
 EXPOSE 2775 8990 1401
 VOLUME [${LOG_PATH}, ${CONFIG_PATH}, ${STORE_PATH}]
 
-COPY docker/docker-entrypoint.sh /
-ENTRYPOINT ["/docker-entrypoint.sh"]
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["jasmind.py", "--enable-interceptor-client", "--enable-dlr-thrower", "--enable-dlr-lookup", "-u", "jcliadmin", "-p", "jclipwd"]
-# Notes:
-# - jasmind is started with native dlr-thrower and dlr-lookup threads instead of standalone processes
-# - restapi (0.9rc16+) is not started in this docker configuration

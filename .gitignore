@@ -41,6 +41,7 @@ _trial_temp
 # IDEs
 .settings
 .idea
+.vscode
 
 # Python
 venv*

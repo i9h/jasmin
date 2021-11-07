@@ -9,8 +9,7 @@ services:
 
   jasmin:
     build:
-      context: ./
-      dockerfile: ./docker/Dockerfile.dev
+      context: .
     container_name: jasmin
     volumes:
       - ./jasmin:/usr/jasmin/jasmin
